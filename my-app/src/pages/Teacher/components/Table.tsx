@@ -9,7 +9,7 @@ import { TableRow } from "@mui/material";
 import { useState } from "react";
 import { ISection } from "../../../Types/Sections";
 import { SectionsMock } from "../../../mocks/Sections";
-
+import { useNavigate } from "react-router";
 interface Column {
   id: "nome" | "code" | "subject" | "teachers" | "hours";
   label: string;
@@ -57,8 +57,25 @@ const columns: readonly Column[] = [
 ];
 
 const SectionRow = ({ section }: { section: ISection }) => {
+  const navigate = useNavigate();
+
   return (
-    <TableRow hover role="checkbox" tabIndex={-1} key={section.id}>
+    <TableRow
+      sx={{
+        "&:hover": {
+          cursor: "pointer",
+          backgroundColor: "blanchedalmond",
+          transition: "0.5s",
+        },
+      }}
+      onClick={() => {
+        navigate(`/sections/${section.id}`);
+      }}
+      hover
+      role="checkbox"
+      tabIndex={-1}
+      key={section.id}
+    >
       <TableCell key={columns[0].id} align={columns[0].align}>
         {section.name}
       </TableCell>
@@ -89,34 +106,7 @@ const SectionRow = ({ section }: { section: ISection }) => {
   );
 };
 
-const Sections: ISection[] = [
-  {
-    id: "172",
-    name: "MAT32",
-    subject: "MATEMATICA",
-    teachers: ["Adriana Mello", "Cristina Bispo", "Eduardo Pereira"],
-    hours: [
-      { day: "quarta", final_hour: "20:20", start_hour: "18:20" },
-      { day: "sexta", final_hour: "20:20", start_hour: "18:20" },
-    ],
-  },
-];
-
 export default function TableSections({ sections }: { sections: ISection[] }) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -141,15 +131,6 @@ export default function TableSections({ sections }: { sections: ISection[] }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={sections.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
     </Paper>
   );
 }
