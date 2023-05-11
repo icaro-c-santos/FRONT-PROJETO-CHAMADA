@@ -14,6 +14,26 @@ const getAllSectionsByTeacher = (
   };
 };
 
+const getSectionById = (idSection: string): ISection => {
+  return SectionsMock[1];
+};
+
+type TUserStatus = {
+  idUser: string;
+  status: string;
+};
+
+type TPostCallSectionBody = {
+  sectionID: string;
+  userStatus: TUserStatus[];
+  hourId: string;
+  date: Date;
+};
+
+const postCallSection = (dataCall: TPostCallSectionBody) => {};
+
 export const Client = {
   getAllSectionsByTeacher,
+  getSectionById,
+  postCallSection,
 };

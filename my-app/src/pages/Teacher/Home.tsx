@@ -1,9 +1,9 @@
 import { SectionsMock } from "../../mocks/Sections";
-import TableSections from "./components/Table";
+import TableSections from "./Components/Table";
 import { useState, useEffect } from "react";
-import { TablePaginationSection } from "./components/TablePagination";
+import { TablePaginationSection } from "./Components/TablePagination";
 import { Client } from "../../client/client";
-import { Header } from "./components/Header";
+import { Header } from "./Components/Header";
 import { Box } from "@mui/material";
 
 type TPagination = {
