@@ -5,8 +5,7 @@ import styled, { css } from "styled-components";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from "@mui/material";
-import { StudentWithStatus } from "..";
-
+import { StudentWithStatus } from "./Section/Section"
 
 
 const StyledTableContainer = styled(TableContainer)`
@@ -77,7 +76,6 @@ export const ListStudents = ({ students }: { students: StudentWithStatus[] }) =>
 
     return (
         <>
-
             <StudentsTable students={students}></StudentsTable>
         </>
     );

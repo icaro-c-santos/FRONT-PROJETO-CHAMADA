@@ -11,12 +11,8 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-
-const pages = [
-    { name: "Turmas", link: "admin/sections" },
-    { name: "Professores", link: "admin/professors" },
-    { name: "Alunos", link: "admin/students" },
-];
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom";
 
 type setting = {
     name: string;
@@ -24,17 +20,16 @@ type setting = {
     handler: () => void;
 };
 
-export const ResponsiveAppBarAdmin = () => {
+export const NavBarPresences = ({ setIsOpenPresence }: { setIsOpenPresence: (value: boolean) => void }) => {
     const navigate = useNavigate();
-    const [settings, setSettings] = React.useState<setting[]>([]);
+    const { professorCode, id } = useParams();
 
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(
         null
     );
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
         null
     );
-
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
@@ -54,6 +49,7 @@ export const ResponsiveAppBarAdmin = () => {
         <AppBar position="static" sx={{ bgcolor: "black" }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
+
                     <Typography
                         variant="h6"
                         noWrap
@@ -62,19 +58,20 @@ export const ResponsiveAppBarAdmin = () => {
                         }}
                         sx={{
                             mr: 2,
-                            display: { xs: "none", md: "flex" },
-                            fontFamily: "monospace",
+                            display: { xs: "none !important;", md: "flex !important;" },
+                            fontFamily: "monospace !important;",
                             fontWeight: 900,
-                            letterSpacing: ".3rem",
-                            color: "inherit",
-                            textDecoration: "none",
+                            letterSpacing: ".3rem !important;",
+                            color: "inherit !important;",
+                            textDecoration: "none !important;",
                             "&:hover": {
-                                cursor: "pointer",
+                                cursor: "pointer !important;",
                             },
                         }}
                     >
                         UFBA
                     </Typography>
+
 
                     <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                         <IconButton
@@ -88,6 +85,7 @@ export const ResponsiveAppBarAdmin = () => {
                             <MenuIcon />
                         </IconButton>
                         <Menu
+
                             id="menu-appbar"
                             anchorEl={anchorElNav}
                             anchorOrigin={{
@@ -102,19 +100,48 @@ export const ResponsiveAppBarAdmin = () => {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
+
                                 display: { xs: "block", md: "none" },
                             }}
                         >
-                            {pages.map((page) => (
+
+                            <Box sx={{ width: "100px" }} >
                                 <MenuItem
-                                    key={page.name}
+                                    key={"turmas"}
                                     onClick={() => {
-                                        navigate(`/${page.link}`);
+                                        navigate(`/professors/self/${professorCode}`);
                                     }}
+                                    sx={{ width: "100%" }}
                                 >
-                                    <Typography textAlign="center">{page.name}</Typography>
+                                    <Typography textAlign="center">{"Turmas"}</Typography>
                                 </MenuItem>
-                            ))}
+
+                            </Box>
+                            <Box sx={{ width: "100px" }} >
+                                <MenuItem
+                                    key={"chamdas"}
+                                    onClick={() => {
+                                        setIsOpenPresence(true);
+                                    }}
+                                    sx={{ width: "100%" }}
+                                >
+                                    <Typography textAlign="center">{"Fazer Chamada"}</Typography>
+                                </MenuItem>
+
+                            </Box>
+
+
+                            <Box sx={{ width: "100px" }} >
+                                <MenuItem
+                                    key={"logout"}
+                                    onClick={() => {
+                                        navigate(`/logout`);
+                                    }}
+                                    sx={{ width: "100%" }}
+                                >
+                                    <Typography textAlign="center">{"Logout"}</Typography>
+                                </MenuItem>
+                            </Box>
                         </Menu>
                     </Box>
 
@@ -137,17 +164,38 @@ export const ResponsiveAppBarAdmin = () => {
                         UFBA
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-                        {pages.map((page) => (
+                        <Box sx={{ marginLeft: "10px", cursor: "pointer" }}>
                             <Button
-                                key={page.name}
+                                key={"turmas"}
                                 onClick={() => {
-                                    navigate(`/${page.link}`);
+                                    navigate(`/professors/self/${professorCode}`);
                                 }}
                                 sx={{ my: 2, color: "white", display: "block" }}
-                            >
-                                {page.name}
+                            >{"Turmas"}
                             </Button>
-                        ))}
+                        </Box>
+                        <Box sx={{ marginLeft: "10px", cursor: "pointer" }}>
+                            <Button
+                                key={"chamada"}
+                                onClick={() => {
+                                    setIsOpenPresence(true);
+                                }}
+                                sx={{ my: 2, color: "white", display: "block" }}
+                            >{"Fazer Chamada"}
+                            </Button>
+                        </Box>
+
+                        <Box sx={{ marginLeft: "auto", "&:hover": { cursor: "pointer" } }}>
+                            <Button
+                                key={"logout"}
+                                onClick={() => {
+                                    navigate(`/logout`);
+                                }}
+                                sx={{ my: 2, color: "white", display: "block", marginLeft: "auto" }}
+                            >{"Logout"}
+                            </Button>
+                        </Box>
+
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -167,22 +215,13 @@ export const ResponsiveAppBarAdmin = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting, index) => (
-                                <Link
-                                    key={index}
-                                    style={{ textDecoration: "none", color: "black" }}
-                                    to={settings[index].path}
-                                >
-                                    <MenuItem key={index} onClick={settings[index].handler}>
-                                        <Typography textAlign="center">{setting.name}</Typography>
-                                    </MenuItem>
-                                </Link>
-                            ))}
+
                         </Menu>
                     </Box>
                 </Toolbar>
             </Container>
         </AppBar>
     );
-};
-export default ResponsiveAppBarAdmin;
+
+}
+

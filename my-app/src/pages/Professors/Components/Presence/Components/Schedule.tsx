@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
-import { ScheduleDto } from '../../..';
 import { SelectChangeEvent } from "@mui/material"
+import { ScheduleDto } from '../../Section/Section';
 const StyledSelect = styled.select`
   padding: 8px;
   border: 1px solid #ccc;

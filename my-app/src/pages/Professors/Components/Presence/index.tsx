@@ -1,140 +1,144 @@
-import { Box, Input, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import ResponsiveAppBar from "../NavBar";
-import Professors from "../Professors";
+import { useParams } from "react-router-dom";
+import ListPresence from "./Components/ListPresence"
+import { clientServer } from "../../../../Client/Client";
+import { useEffect, useState } from "react"
+import { TablePagination } from "@material-ui/core";
+import Box from "@mui/material/Box";
+import { NavBarPresences } from "./Components/NavBarPresence";
 import { useQuery } from "react-query";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { API_URL } from "../../../../env/env";
-import PresenceComponente, { PresenceCreated } from "./Components/Presence";
-import Subject from "../Subject";
-import { Typedata } from "../..";
-import CustomSelect from "./Components/Schedule";
-import Calendar from "./Components/Date";
-import BasicDateCalendar from "./Components/Date";
-import { Button } from "@material-ui/core";
-import { setDay } from "date-fns";
-
-
-const fetchDataSections = async ({
-    queryKey,
-}: {
-    queryKey: (string | undefined)[];
-}): Promise<Typedata> => {
-    const sectionId = queryKey[1] as string;
-    const { data } = await axios.get(`${API_URL}/sections/${sectionId}`);
-    return data;
+import Pagination from "@mui/material/Pagination";
+import ModalUpdatePresence from "./Components/ModalUpdatePresence";
+import Filter from "./Components/Searche";
+import BuscaGeral from "./Components/Searche";
+import { CreatePresence } from "./Components/CreatePresence";
+export type TypeDataPresence = {
+    presences: TypePresence[],
+    page: number,
+    pageSize: number
 };
 
-type DataPresence = {
+export type TypePresence = {
+    enrolment: number,
+    name: string,
+    email: string,
     date: Date,
-    scheduleCode: number,
-    status: number,
-    studentEnrolment: number
+    sectionCode: number,
+    subjectName: string,
+    status: string,
+    code: number,
 }
 
-const fetchCreatePresence = async (data: DataPresence) => {
+export type Filters = {
+    page?: number,
+    pageSize?: number,
+    sectionCode?: number,
+    date?: string,
+    name: string,
+    enrolment?: number
+}
 
-  /*   await axios.post(`${API_URL}/sections/${sectionId}/`, {
-        data: { data }
-    }) */
+export type DataSearch = {
+    name: string,
+    enrolment: string,
+    date?: string
 }
 
 
-export const Presence = () => {
+
+const fetchDataPresences = async (filters: Filters): Promise<TypeDataPresence> => {
+    const data = await clientServer.getPresenceByFilter(filters as Filters) as unknown;
+    return data as TypeDataPresence;
+};
+
+
+export const PagePresence = () => {
     const { id } = useParams();
+    const [filters, setFilters] = useState<Filters>({
+        page: 1,
+        pageSize: 100,
+        date: new Date().toString(),
+        name: "",
+        enrolment: 0
+    })
+    const [dataPresenca, setDataPresenca] = useState<TypePresence | null>();
+    const [updatePresenceIsOpen, setUpdatePresenceIsOpen] = useState(false);
+    const [dataFilter, setDataFilter] = useState<DataSearch>({
+        name: "",
+        enrolment: ""
+    });
 
-    const { data, status, error } = useQuery(["data", id], fetchDataSections);
-    const [isCall, setIsCall] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [codeSchedule, setCodeSchedule] = useState(0);
-    const [day, setday] = useState(-1);
-    const [date, setDate] = useState("");
-    const handleCloseModal = () => {
-        setErrorMessage('');
-    };
-    const navigate = useNavigate();
+    const [isOpenPresence, setIsOpenPresence] = useState(false);
 
     useEffect(() => {
-        let schedule = data?.schedules.filter(item => item.code == codeSchedule)
-        if (schedule != null && schedule.length > 0) {
-            setIsCall(false);
-            if (new Date(date).getDay() != schedule[0].day - 1) {
-                alert("DATA INVALIDA PARA O DIA DE AULA SELECIONADO!");
-            } else {
-                setDate(new Date(date).toString());
-                setIsCall(true);
-            }
+        if (id) {
+            setFilters({ ...filters, sectionCode: parseInt(id) })
         }
+    }, [])
 
-    }, [date])
+    const handlePageChange = (page: number) => {
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            page,
+        }));
+    };
 
-    const handleCodeSchedule = (value: number) => {
-        setCodeSchedule(value);
-        let schedule = data?.schedules.filter(item => item.code == value)
-        setday((schedule != null && schedule?.length > 0 && schedule[0].day) || -1);
-    }
-    const handlerDate = (date: string) => {
-        setDate(date);
-    }
-    const createPresence = async (data: PresenceCreated[]) => {
-        console.log(data);
-        const errosUsers = data.filter(item => item.status <= 0 || item.status > 3);
-        if (errosUsers.length > 0) {
-            alert("ERRO: ALGUNS ALUNOS NÃO FORAM COMPUTADOS!");
-            return
-        }
-        let errorMessage = ""
-        for (let presence of data) {
-            try {
-                await fetchCreatePresence({
-                    date: new Date(date),
-                    scheduleCode: codeSchedule,
-                    status: presence.status,
-                    studentEnrolment: presence.enrolment
-                });
-                setIsCall(false);
-            } catch (error: any) {
-                errorMessage = errorMessage.concat(`${presence.name} - ${presence.enrolment} - ERROR: ${(error?.message)}`);
-            }
+    const handlePageSizeChange = (pageSize: number) => {
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            pageSize,
+        }));
+    };
 
-
-        }
-        if (errorMessage.length == 0) {
-            alert("CHAMDA FEITA COM SUCESSO!");
-            navigate(`/professors/sections/${id}/`);
-        }
-
+    const handlerSearch = () => {
+        alert(`${dataFilter.name} -  ${dataFilter.date}  - ${dataFilter.enrolment}`)
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            name: dataFilter.name,
+            date: dataFilter.date,
+            enrolment: dataFilter.enrolment
+        }));
     }
 
-
-
-
+    //@ts-ignore
+    const { data, status, error } = useQuery(["data", filters], fetchDataPresences, { retry: 3 });
 
     return (
-        <Box>
-            {errorMessage.length > 0 && <></>}
-            <ResponsiveAppBar></ResponsiveAppBar>
-            {status == "success" && <>
-                <Box>
-                    <Box>
-                        <Subject subjectLoad={data.subjectLoad} subjectName={data.subjectName}></Subject>
-                    </Box>
-                    <Box>
-                        <Professors professors={data.professors}></Professors>
-                    </Box>
-                </Box>
+        <>
+            <NavBarPresences setIsOpenPresence={setIsOpenPresence} />
+            {!!isOpenPresence && <CreatePresence setIsOpenPresence={setIsOpenPresence} ></CreatePresence>}
+            {!isOpenPresence && <>
 
-                {!isCall && <Box sx={{ display: "flex", justifyContent: "center", flexDirection: "column", marginTop: "20px", width: "max-content", margin: "auto", gap: "20px" }}>
-                    <CustomSelect onChange={handleCodeSchedule} options={data.schedules}></CustomSelect>
-                    {codeSchedule != 0 && <BasicDateCalendar onSelectDate={handlerDate}></BasicDateCalendar>}
 
-                </Box>}
-                <Box>
-                    {isCall && <PresenceComponente data={data.students} createPresence={createPresence}></PresenceComponente>}
-                </Box>
+                <BuscaGeral
+                    key={"searchFilters"}
+                    updateState={setDataFilter}
+                    filters={dataFilter}
+                    clickSearch={handlerSearch}
+                />
 
+                <span style={{ borderBottom: "2px solid black", margin: "30px 10px 20px 10px" }}></span>
+                {(updatePresenceIsOpen && dataPresenca != null) && < ModalUpdatePresence data={dataPresenca} update={setUpdatePresenceIsOpen} />}
+                {
+                    status === "success" &&
+                    < >
+                        <ListPresence presence={data.presences} setDataPresenca={setDataPresenca} setUpdateModal={setUpdatePresenceIsOpen} />
+                        <Box sx={{ display: "block", marginBottom: "25px" }}>
+                            <TablePagination
+                                style={{ display: "block" }}
+                                rowsPerPageOptions={[10, 25, 50]}
+                                count={data.presences?.length || 0}
+                                rowsPerPage={filters.pageSize || 100}
+                                page={(filters.page || 1) - 1}
+                                onPageChange={(event, newPage) => handlePageChange(newPage + 1)}
+                                onRowsPerPageChange={(event) =>
+                                    handlePageSizeChange(parseInt(event.target.value, 10))} />
+                        </Box>
+                    </>
+                }
             </>}
-        </Box>
+        </>
     );
 };
+
+
+

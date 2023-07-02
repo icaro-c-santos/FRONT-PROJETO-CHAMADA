@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import { TextField } from '@mui/material';
 
 interface BasicDateCalendarProps {
-    onSelectDate: (date: Date | null) => void;
+    onSelectDate: (value: string) => void;
+    style?: CSSProperties;
 }
 
-const BasicDateCalendar = ({ onSelectDate }: { onSelectDate: (date: string) => void }) => {
+const BasicDateCalendar = ({ onSelectDate, style }: BasicDateCalendarProps) => {
 
 
     return (
         <>
-            <input style={{ height: "32px" }} type="date" onChange={(target) => {
+            <input style={{ height: "32px", ...style }} type="date" onChange={(target) => {
                 onSelectDate(target.currentTarget.value);
             }}></input>
         </>

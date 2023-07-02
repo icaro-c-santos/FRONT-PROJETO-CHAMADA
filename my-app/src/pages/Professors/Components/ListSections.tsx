@@ -15,7 +15,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import ConfirmModal from "./ConfirmModal";
 import imgs from "./../../../icons/icon_lixeira.png"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 
 export type TypeDataSection = {
@@ -46,17 +46,6 @@ const StyledTableCell = styled(TableCell) <{ status?: string }>`
 
 
 
-const deleteSection = async (codeSection: number) => {
-    try {
-        await axios.delete(`${API_URL}/sections/${codeSection}`);
-        alert("TURMA EXCLUÍDA COM SUCESSO!");
-    } catch (error: any) {
-        console.log(error.message);
-        alert("NÃO FOI POSSÍVEL EXCLUIR A TURMA!");
-    }
-
-}
-
 export type PropsListSections = {
     sections: TypeDataSection[],
 }
@@ -69,30 +58,23 @@ export const ListSections = ({ sections }: PropsListSections) => {
         setDeletingSection(section);
         setOpen(true);
     };
-
+    const { professorCode } = useParams();
 
     const hanleNavigate = (id: number) => {
-        navigate(`/admin/sections/${id}`)
+        navigate(`/professors/self/${professorCode}/sections/${id}`)
     }
 
-    const handleConfirmDelete = async () => {
-        if (deletingSection) {
-            await deleteSection(deletingSection.code);
-            setDeletingSection(null);
-            setOpen(false);
-        }
-    };
 
     return (
         <>
-            {open && <ConfirmModal openModal={open} setOpenModal={setOpen} callback={handleConfirmDelete} />}
             <StyledTableContainer>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell>Turma</StyledTableCell>
+                            <StyledTableCell>Código da Turma</StyledTableCell>
                             <StyledTableCell>Disciplina</StyledTableCell>
                             <StyledTableCell>Carga Horaria</StyledTableCell>
+                            <StyledTableCell>Código da Disicplina</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody sx={{
@@ -113,8 +95,8 @@ export const ListSections = ({ sections }: PropsListSections) => {
                                 <StyledTableCell onClick={() => {
                                     hanleNavigate(section.code)
                                 }} >{section.subject_load}</StyledTableCell>
-                                <StyledTableCell sx={{ cursor: "pointer", width: "50px", }} >
-                                    <img width={"20px"} onClick={() => handlerSectionDelete(section)} src={imgs} alt="Excluir" />
+                                <StyledTableCell >
+                                    {section.subject}
                                 </StyledTableCell>
                             </TableRow>
                         ))}

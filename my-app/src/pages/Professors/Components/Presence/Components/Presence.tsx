@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import styled from "styled-components";
 import { Student } from "../../../../../Types/Students";
-import { StudentWithStatus } from "../../..";
 import Carousel from "react-material-ui-carousel";
+import { StudentWithStatus } from "../../Section/Section";
 
 const CarouselContainer = styled.div`
   width: 480px;
