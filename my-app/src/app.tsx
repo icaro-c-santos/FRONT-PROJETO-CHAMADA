@@ -4,13 +4,15 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React from "react";
 import { PagePresence } from "./pages/Professors/Components/Presence";
-import { ProtectedRouterProfessor } from "./Auth/ProtectRouters";
+import { ProtectedRouterProfessor, ProtectedRouterStudent } from "./Auth/ProtectRouters";
 import { Login } from "./pages/Users/Login";
 import { AuthProvider } from "./Auth/AuthContext";
 import { PageSections } from "./pages/Professors";
 import { Section } from "./pages/Professors/Components/Section/Section";
 import { Logout } from "./pages/Users/Logout";
 import { NavBarPresences } from "./pages/Professors/Components/Presence/Components/NavBarPresence";
+import { PageSudents } from "./pages/Students";
+import { PagePresenceStudent } from "./pages/Students/Pages/Presence";
 
 
 
@@ -40,7 +42,19 @@ export const App = () => {
                             <PagePresence />
                         </ProtectedRouterProfessor>
                     </>} />
+
                     
+
+                    <Route path="/students/self/:studentEnrolment" element={<>
+                        <ProtectedRouterStudent>
+                            <PageSudents />
+                        </ProtectedRouterStudent>
+                    </>} />
+                    <Route path="/students/self/:studentEnrolment/sections/:id" element={<>
+                        <ProtectedRouterStudent>
+                            <PagePresenceStudent />
+                        </ProtectedRouterStudent>
+                    </>} />
 
 
                 </Routes>

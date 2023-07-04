@@ -16,7 +16,7 @@ export const Login = () => {
     const [messageAlert, setMessageAlert] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const navigate = useNavigate();
-    const [show, setShow] = useState(true);
+    userLogged.isLoggedIn && navigate("/");
 
     useEffect(() => {
         login.length <= 0 && setIsValidLogin(true);
@@ -30,6 +30,7 @@ export const Login = () => {
         }
     }
 
+    userLogged.isLoggedIn && navigate("/");
     const validLogin = (value: string) => {
         if (value.length <= 0) {
             setIsValidLogin(false);
@@ -55,12 +56,13 @@ export const Login = () => {
                 password: password,
             });
 
+
             user.isLoggedIn = true;
 
             setUserLogged(user);
 
             localStorage.setItem("userLogged", JSON.stringify(user));
-
+            console.log(user);
             if (user.enrolment != null && user.enrolment > 0) {
                 navigate(`/students/self/${user.enrolment}`)
             } else if (user.code != null && user.code > 0) {
@@ -140,11 +142,6 @@ export const Login = () => {
                         Entrar
                     </Button>
                 </Box>
-            </Box>
-            <Box sx={{ margin: "auto", textAlign: "center" }}>
-                {
-                    "ATENÇÃO PARA TESTE USE O SEGUINTE USUÁRIO -> Usuario: user ,Senha: user"
-                }
             </Box>
         </Box>
     );

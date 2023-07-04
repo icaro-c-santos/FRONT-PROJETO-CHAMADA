@@ -26,18 +26,44 @@ const fetchDataSections = async ({
     return data;
 };
 
+const getStatus = (value: string) => {
+
+    if (value == "presente") return 1
+
+    if (value == "ausente") return 2
+
+    if (value == "abonada") return 3
+
+}
+
 type DataPresence = {
     date: Date,
     scheduleCode: number,
     status: number,
     studentEnrolment: number
 }
+export const fetchPresence = async (data: PresenceCreated[], scheduleCode: number, date: string) => {
 
-const fetchCreatePresence = async (data: DataPresence) => {
+    let erros = "";
+    for (let presence of data) {
+        try {
+            await clientServer.createPresence({
+                date: date,
+                code: scheduleCode,
+                status: presence.status,
+                enrolment: presence.enrolment
+            });
+        } catch (error: any) {
+            erros = erros.concat(`${presence.name} - ${presence.enrolment} - ERROR: ${(error?.message)}`);
+        }
+
+        if (erros.length > 0) {
+            throw new Error(erros);
+        }
 
 
+    }
 }
-
 
 export const CreatePresence = ({ setIsOpenPresence }: { setIsOpenPresence: (value: boolean) => void }) => {
     const { id } = useParams();
@@ -51,7 +77,7 @@ export const CreatePresence = ({ setIsOpenPresence }: { setIsOpenPresence: (valu
     const handleCloseModal = () => {
         setErrorMessage('');
     };
-
+    console.log("renderizando demais")
     useEffect(() => {
         let schedule = data?.schedules.filter(item => item.code == codeSchedule)
         if (schedule != null && schedule.length > 0) {
@@ -81,30 +107,21 @@ export const CreatePresence = ({ setIsOpenPresence }: { setIsOpenPresence: (valu
             alert("ERRO: ALGUNS ALUNOS NÃO FORAM COMPUTADOS!");
             return
         }
-        let errorMessage = ""
-        for (let presence of data) {
-            try {
-                await fetchCreatePresence({
-                    date: new Date(date),
-                    scheduleCode: codeSchedule,
-                    status: presence.status,
-                    studentEnrolment: presence.enrolment
-                });
-                setIsCall(false);
-            } catch (error: any) {
-                errorMessage = errorMessage.concat(`${presence.name} - ${presence.enrolment} - ERROR: ${(error?.message)}`);
-            }
 
-
+        try {
+            await fetchPresence(data, codeSchedule, date);
+            setIsOpenPresence(false);
+        } catch (error: any) {
+            alert(error.message)
         }
+
+
         if (errorMessage.length == 0) {
             alert("CHAMDA FEITA COM SUCESSO!");
         }
         setIsOpenPresence(false);
 
     }
-
-
 
 
 

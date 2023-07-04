@@ -7,6 +7,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import NativeSelect from '@mui/material/NativeSelect';
 import { clientServer } from '../../../../../Client/Client';
+import { convertDateToDayMonthYear } from '../../../../../utils/Date.utils';
 
 const ModalContainer = styled.div`
   display: flex;
@@ -74,6 +75,7 @@ export const ModalUpdatePresence = ({ data, update }: { data: TypePresence; upda
 
 
     const handleConfirm = async () => {
+        
         try {
             await clientServer.updatePresence({
                 ...data,
@@ -105,7 +107,7 @@ export const ModalUpdatePresence = ({ data, update }: { data: TypePresence; upda
                         <InfoText>Matrícula: {data.enrolment}</InfoText>
                         <InfoText>Name: {data.name}</InfoText>
                         <InfoText>Email: {data.email}</InfoText>
-                        <InfoText>Data: {data.date.toLocaleDateString()}</InfoText>
+                        <InfoText>Data: {convertDateToDayMonthYear(data.date)}</InfoText>
                         <InfoText>Codigo da Turma: {data.sectionCode}</InfoText>
                         <InfoText>Disciplina: {data.subjectName}</InfoText>
                     </Box>

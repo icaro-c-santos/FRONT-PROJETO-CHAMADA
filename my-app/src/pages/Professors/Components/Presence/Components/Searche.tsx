@@ -43,6 +43,7 @@ type BuscaGeralProps = {
 
 const BuscaGeral = ({ updateState, filters, clickSearch }: BuscaGeralProps) => {
     const handleDateChange = (event: string) => {
+        
         updateState({ ...filters, date: new Date(event).toString() })
     };
 

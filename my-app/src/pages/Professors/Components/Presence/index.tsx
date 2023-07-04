@@ -45,8 +45,10 @@ export type DataSearch = {
 
 
 
-const fetchDataPresences = async (filters: Filters): Promise<TypeDataPresence> => {
-    const data = await clientServer.getPresenceByFilter(filters as Filters) as unknown;
+const fetchDataPresences = async (query: any): Promise<TypeDataPresence> => {
+    const filters = query.queryKey[1] as unknown as Filters;
+
+    const data = await clientServer.getPresenceByFilterTeacher(filters as Filters) as unknown;
     return data as TypeDataPresence;
 };
 
@@ -56,7 +58,6 @@ export const PagePresence = () => {
     const [filters, setFilters] = useState<Filters>({
         page: 1,
         pageSize: 100,
-        date: new Date().toString(),
         name: "",
         enrolment: 0
     })
@@ -90,7 +91,7 @@ export const PagePresence = () => {
     };
 
     const handlerSearch = () => {
-        alert(`${dataFilter.name} -  ${dataFilter.date}  - ${dataFilter.enrolment}`)
+
         setFilters((prevFilters) => ({
             ...prevFilters,
             name: dataFilter.name,
@@ -121,7 +122,12 @@ export const PagePresence = () => {
                 {
                     status === "success" &&
                     < >
-                        <ListPresence presence={data.presences} setDataPresenca={setDataPresenca} setUpdateModal={setUpdatePresenceIsOpen} />
+                        <ListPresence presence={data.presences.map(item => {
+                            return {
+                                ...item,
+                                statusValue: item.status
+                            }
+                        })} setDataPresenca={setDataPresenca} setUpdateModal={setUpdatePresenceIsOpen} />
                         <Box sx={{ display: "block", marginBottom: "25px" }}>
                             <TablePagination
                                 style={{ display: "block" }}

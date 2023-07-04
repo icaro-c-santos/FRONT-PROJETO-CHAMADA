@@ -1,156 +1,121 @@
 import axios from "axios";
 import { API_URL } from "../env/env";
-import { TypePresence } from "../pages/Professors/Components/Presence";
+import { Filters, TypePresence } from "../pages/Professors/Components/Presence";
 
 
-const axiosUnstance = axios.create({
-
+const axiosInstance = axios.create({
+    baseURL: `${API_URL}/client/`
 });
 
 
 
-const createPresence = async () => {
-    /*   await axios.post(`${API_URL}/sections/${sectionId}/`, {
-        data: { data }
-    }) */
+const createPresence = async (createPresence: unknown) => {
+    return await axiosInstance.post(`students/sections/1/presences`, 
+        createPresence
+    )
 }
 
 const updatePresence = async (presenceUpdate: unknown) => {
-    /*   await axios.post(`${API_URL}/sections/${sectionId}/`, {
-        data: { data }
-    }) */
+    return await axiosInstance.put(`students/sections/1/presences`, 
+         presenceUpdate
+    )
 }
 
 const getDataSections = async () => {
-    const { data } = await axios.get(`${API_URL}/sections/`);
+    const { data } = await axiosInstance.get(`/professors/sections`);
     return data;
+}
+
+const getDataSectionsOfStudent = async () => {
+    const { data } = await axiosInstance.get(`students/sections`);
+    return data;
+
+}
+
+const getDataSectionsOfStudentWith = async (id: number) => {
+    const { data } = await axiosInstance.get(`students/sections/${id}`);
+    return data;
+
 }
 
 const getDataSectionById = async (sectionId: number) => {
 
-    const { data } = await axios.get(`${API_URL}/sections/${sectionId}`);
+    const { data } = await axiosInstance.get(`professors/sections/${sectionId}`);
 
     return data;
 }
 
 
-const getPresenceByFilter = async (filters: any) => {
-    const dataPresence: TypePresence[] = [
+const getPresenceByFilter = async (filters: Filters) => {
+
+    const { data } = await axiosInstance.get(`students/sections/${filters.sectionCode}/presences`,
         {
-            code: 1,
-            enrolment: 1,
-            name: "João",
-            email: "joao@example.com",
-            date: new Date(),
-            sectionCode: 123,
-            subjectName: "Matemática",
-            status: "abonada",
-        }, {
-            code: 2,
-            enrolment: 2,
-            name: "Maria",
-            email: "maria@example.com",
-            date: new Date(),
-            sectionCode: 456,
-            subjectName: "História",
-            status: "ausente",
-        },
-        {
-            code: 3,
-            enrolment: 3,
-            name: "Pedro",
-            email: "pedro@example.com",
-            date: new Date(),
-            sectionCode: 789,
-            subjectName: "Geografia",
-            status: "presente",
-        },
-        {
-            code: 4,
-            enrolment: 4,
-            name: "Ana",
-            email: "ana@example.com",
-            date: new Date(),
-            sectionCode: 123,
-            subjectName: "Matemática",
-            status: "abonada",
-        },
-        {
-            code: 5,
-            enrolment: 5,
-            name: "Lucas",
-            email: "lucas@example.com",
-            date: new Date(),
-            sectionCode: 456,
-            subjectName: "História",
-            status: "ausente",
-        },
-        {
-            code: 6,
-            enrolment: 6,
-            name: "Carla",
-            email: "carla@example.com",
-            date: new Date(),
-            sectionCode: 789,
-            subjectName: "Geografia",
-            status: "presente",
-        },
-        {
-            code: 7,
-            enrolment: 7,
-            name: "José",
-            email: "jose@example.com",
-            date: new Date(),
-            sectionCode: 123,
-            subjectName: "Matemática",
-            status: "presente",
-        },
-        {
-            code: 8,
-            enrolment: 8,
-            name: "Mariana",
-            email: "mariana@example.com",
-            date: new Date(),
-            sectionCode: 456,
-            subjectName: "História",
-            status: "ausente",
-        },
-        {
-            code: 9,
-            enrolment: 9,
-            name: "Fernando",
-            email: "fernando@example.com",
-            date: new Date(),
-            sectionCode: 789,
-            subjectName: "Geografia",
-            status: "ausente",
-        },
-        {
-            code: 10,
-            enrolment: 10,
-            name: "Camila",
-            email: "camila@example.com",
-            date: new Date(),
-            sectionCode: 123,
-            subjectName: "Matemática",
-            status: "presente",
+            params: {
+                name: filters.name,
+                page: filters.page,
+                pageSize: filters.pageSize,
+                studentEnrolment: filters.enrolment,
+                sectionCode: filters.sectionCode,
+                date: filters.date
+            }
         }
-    ];
-
+    )
     return {
-
-        page: 1,
-        pageSize: 100,
-        presences: dataPresence
+        presences: data
     }
 }
 
+
+const getPresenceByFilterTeacher = async (filters: Filters) => {
+
+    
+
+    const { data } = await axiosInstance.get(`professors/sections/${filters.sectionCode}/presences`,
+
+
+        {
+            params: {
+                name: filters.name,
+                page: filters.page,
+                pageSize: filters.pageSize,
+                studentEnrolment: filters.enrolment,
+                sectionCode: filters.sectionCode,
+                date: filters.date
+            }
+        }
+    )
+    return {
+        presences: data
+    }
+}
+
+
+const getPresenceByStudent = async (sectionCode: number) => {
+
+    const { data } = await axiosInstance.get(`/students/sections/${sectionCode}/presences`)
+    return data;
+
+}
+
 const getDataSectionsWith = async (sectionCode: number) => {
-    const { data } = await axios.get(`${API_URL}/sections/2/`);
-    console.log("data");
+    const { data } = await axiosInstance.get(`professors/sections/${sectionCode}`);
     return data;
 }
 
+
+
+const login = async (user: string, password: string) => {
+
+
+    const { data } = await axiosInstance.post("/login", {
+
+        user: user,
+        password: password
+
+    })
+
+    return data;
+}
 
 export const clientServer = {
     getDataSections,
@@ -158,5 +123,10 @@ export const clientServer = {
     getDataSectionById,
     getPresenceByFilter,
     updatePresence,
-    getDataSectionsWith
+    getDataSectionsWith,
+    getDataSectionsOfStudent,
+    getPresenceByStudent,
+    login,
+    getDataSectionsOfStudentWith,
+    getPresenceByFilterTeacher
 }

@@ -83,6 +83,7 @@ const PresenceComponente = ({ data, createPresence }: { data: StudentWithStatus[
             enrolment: student.enrolment,
             status: 0
         }))
+        
     );
 
     const handleStatusChange = (index: number, status: number) => {
