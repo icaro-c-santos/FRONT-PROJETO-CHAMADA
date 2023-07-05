@@ -16,21 +16,19 @@ export const Login = () => {
     const [messageAlert, setMessageAlert] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const navigate = useNavigate();
-    userLogged.isLoggedIn && navigate("/");
+
 
     useEffect(() => {
         login.length <= 0 && setIsValidLogin(true);
+        if (userLogged != null && userLogged.isLoggedIn == true) {
+            if (userLogged.enrolment != null && userLogged.enrolment > 0) {
+                navigate(`/students/self/${userLogged.enrolment}`)
+            } else if (userLogged.codeProfessor != null && userLogged.codeProfessor > 0) {
+                navigate(`/professors/self/${userLogged.codeProfessor}`)
+            }
+        }
     }, []);
 
-    if (userLogged != null && userLogged.isLoggedIn == true) {
-        if (userLogged.enrolment != null && userLogged.enrolment > 0) {
-            navigate(`/students/self/${userLogged.enrolment}`)
-        } else if (userLogged.code != null && userLogged.code > 0) {
-            navigate(`/professors/self/${userLogged.code}`)
-        }
-    }
-
-    userLogged.isLoggedIn && navigate("/");
     const validLogin = (value: string) => {
         if (value.length <= 0) {
             setIsValidLogin(false);
@@ -57,16 +55,16 @@ export const Login = () => {
             });
 
 
+
             user.isLoggedIn = true;
 
             setUserLogged(user);
-
             localStorage.setItem("userLogged", JSON.stringify(user));
-            console.log(user);
+
             if (user.enrolment != null && user.enrolment > 0) {
                 navigate(`/students/self/${user.enrolment}`)
-            } else if (user.code != null && user.code > 0) {
-                navigate(`/professors/self/${user.code}`)
+            } else if (user.codeProfessor != null && user.codeProfessor > 0) {
+                navigate(`/professors/self/${user.codeProfessor}`)
             }
 
         } catch (error: any) {

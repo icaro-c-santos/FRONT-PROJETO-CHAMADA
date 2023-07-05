@@ -5,8 +5,9 @@ export type TAuthData = {
     token?: string;
     name?: string;
     enrolment?: number,
-    code?: number
+    codeProfessor?: number
     isLoggedIn?: boolean;
+    senha?: string
 };
 
 export type TAuthContext = {

@@ -10,7 +10,7 @@ export const ProtectedRouterProfessor = ({
 }) => {
     const { userLogged } = useContext(AuthContext);
 
-    return userLogged.code != null && userLogged.code > 0 && userLogged.isLoggedIn ? <>{children}</> : <Login />;
+    return userLogged.codeProfessor != null && userLogged.codeProfessor > 0 && userLogged.isLoggedIn ? <>{children}</> : <Login />;
 };
 
 export const ProtectedRouterStudent = ({
